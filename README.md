@@ -44,10 +44,10 @@ Each driver is built directly on the reference manual (RM0090): peripheral regis
 
 The drivers are a learning project and are being improved. Known points:
 
-- [ ] `*_IRQInterruptConfig()`: NVIC `ICER`/`ISER` are written with `|=`. These registers are write-1-to-act, so a direct write (`=`) is required, otherwise disabling one IRQ can disable every IRQ currently enabled in the same register.
-- [ ] `GPIO_Init()`: `SYSCFG->EXTICR` is assigned directly, which overwrites the port selection of the 3 other pins sharing the register. It must be cleared then OR-ed.
-- [ ] `GPIO_IRQHandling()`: `EXTI->PR` is also write-1-to-clear, so `|=` clears every pending EXTI line, not only the one handled.
-- [ ] `*_IRQPriorityConfig()`: priority bits are OR-ed without being cleared first.
+- [x] `*_IRQInterruptConfig()`: NVIC `ISER`/`ICER` now written directly (write-1-to-act registers).
+- [x] `GPIO_Init()`: `SYSCFG->EXTICR` is cleared then OR-ed, so other pins in the register are preserved.
+- [x] `GPIO_IRQHandling()`: `EXTI->PR` is cleared with a direct write (rc_w1), only the handled line is cleared.
+- [x] `*_IRQPriorityConfig()`: priority field is cleared before being set, input masked to 4 bits.
 - [ ] `RCC_GetPCLK1Value()`: the PLL clock source is not supported yet.
 - [ ] Blocking APIs wait on status flags without timeout (a missing I2C slave blocks the MCU).
 - [ ] USART driver

@@ -510,30 +510,30 @@ void I2C_IRQInterruptConfig(uint8_t IRQNumber, uint8_t EnOrDi)
     {
         if (IRQNumber <= 31)
         {
-            *NVIC_ISER0 |= (1 << IRQNumber);
+            *NVIC_ISER0 = (1U << IRQNumber);
         }
         else if (IRQNumber > 31 && IRQNumber < 64)    // 32 to 63
         {
-            *NVIC_ISER1 |= (1 << (IRQNumber % 32));
+            *NVIC_ISER1 = (1U << (IRQNumber % 32));
         }
         else if (IRQNumber >= 64 && IRQNumber < 96)   // 64 to 95
         {
-            *NVIC_ISER2 |= (1 << (IRQNumber % 32));
+            *NVIC_ISER2 = (1U << (IRQNumber % 32));
         }
     }
     else
     {
         if (IRQNumber <= 31)
         {
-            *NVIC_ICER0 |= (1 << IRQNumber);
+            *NVIC_ICER0 = (1U << IRQNumber);
         }
         else if (IRQNumber > 31 && IRQNumber < 64)
         {
-            *NVIC_ICER1 |= (1 << (IRQNumber % 32));
+            *NVIC_ICER1 = (1U << (IRQNumber % 32));
         }
         else if (IRQNumber >= 64 && IRQNumber < 96)
         {
-            *NVIC_ICER2 |= (1 << (IRQNumber % 32));
+            *NVIC_ICER2 = (1U << (IRQNumber % 32));
         }
     }
 }
@@ -557,8 +557,9 @@ void I2C_IRQPriorityConfig(uint8_t IRQNumber, uint32_t IRQPriority)
     uint8_t iprx_section = IRQNumber % 4;
 
     uint8_t shift_amount = (8 * iprx_section) + (8 - NVIC_PR_BITS_IMPLEMENTED);
-
-    *(NVIC_PR_BASE_ADDR + iprx) |= (IRQPriority << shift_amount);
+	
+	*(NVIC_PR_BASE_ADDR + iprx) &= ~(0xFU << shift_amount);                       // Clear
+	*(NVIC_PR_BASE_ADDR + iprx) |=  ((IRQPriority & 0xFU) << shift_amount);       // Set
 }
 
 /************************************************************************************
